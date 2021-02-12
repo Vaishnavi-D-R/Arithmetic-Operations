@@ -1,10 +1,27 @@
-node{
-  stage('CLONE'){
-    git 'https://github.com/Vaishnavi-D-R/Arithmetic-Operations'
-  }
-  stage('COMPILE'){
-    //def mvnHome = tool name: 'MAVEN-3.6.3', type: 'maven'
-    sh "mvn --version"
-  }
-  
+pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.6.9'
+    }
+    stages {
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
+            }
+        }
+
+        stage ('Build') {
+            steps {
+                sh 'mvn -Dmaven.test.failure.ignore=true install' 
+            }
+            post {
+                success {
+                    junit 'target/surefire-reports/**/*.xml' 
+                }
+            }
+        }
+    }
 }
