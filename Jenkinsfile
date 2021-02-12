@@ -4,7 +4,7 @@ node{
   }
   stage('COMPILE'){
     def mvnHome = tool name: 'MAVEN-3.6.3', type: 'maven'
-    sh "${mvnHome}/bin/mvn package"
+    sh "mvn --version"
   }
   
 }
