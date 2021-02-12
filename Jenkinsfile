@@ -1,27 +1,25 @@
 pipeline {
-    agent any
-    tools {
-        maven 'Maven-3.6.9'
-    }
     stages {
-        stage ('Initialize') {
-            steps {
-                sh '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
-                '''
-            }
-        }
+        //node ("windows") {
+  stage ('Build') {
 
-        stage ('Build') {
-            steps {
-                sh 'mvn -Dmaven.test.failure.ignore=true install' 
-            }
-            post {
-                success {
-                    junit 'target/surefire-reports/**/*.xml' 
-                }
-            }
-        }
-    }
+    git url: 'https://github.com/Vaishnavi-D-R/Arithmetic-Operations'
+
+    withMaven(
+        maven: 'maven-3.6.3', // (1)
+        // Use `$WORKSPACE/.repository` for local repository folder to avoid shared repositories
+      //  mavenLocalRepo: '.repository', // (2)
+        // Maven settings.xml file defined with the Jenkins Config File Provider Plugin
+        // We recommend to define Maven settings.xml globally at the folder level using
+        // navigating to the folder configuration in the section "Pipeline Maven Configuration / Override global Maven configuration"
+        // or globally to the entire master navigating to  "Manage Jenkins / Global Tools Configuration"
+      //  mavenSettingsConfig: 'my-maven-settings' // (3)
+    ) {
+
+      // Run the maven build
+      sh "mvn clean verify"
+
+    } // withMaven will discover the generated Maven artifacts, JUnit Surefire & FailSafe & FindBugs & SpotBugs reports...
+  }
+}
 }
